@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace APi_Basics
 {
@@ -29,6 +30,10 @@ namespace APi_Basics
             // Web API configuration and services
 
             // Web API routes
+
+            EnableCorsAttribute cors = new EnableCorsAttribute("*", "*", "*");
+            config.EnableCors(cors);
+           // config.Filters.Add(new BasicAuthentication());
             config.MapHttpAttributeRoutes();
            // config.Formatters.Add(new CustomJSonFormatter());
 

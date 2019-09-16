@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Web.Http;
 using EmployeeDataAccess;
 
@@ -18,18 +19,28 @@ namespace APi_Basics.Controllers
                 return entities.Employees.ToList();
             }
         }
+        [BasicAuthentication]
         public HttpResponseMessage Get(int id)
         {
+            string UserName = Thread.CurrentPrincipal.Identity.Name;
             using (EmployeeDBEntities entities = new EmployeeDBEntities())
             {
-                var ent = entities.Employees.FirstOrDefault(e => e.ID == id);
-                if(ent != null)
+                if (UserName != null)
                 {
-                    return Request.CreateResponse(HttpStatusCode.OK, ent);
+                    var ent = entities.Employees.FirstOrDefault(e => e.ID == id);
+                    if (ent != null)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.OK, ent);
+                    }
+                    else
+                    {
+                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, id.ToString() + "is not found");
+                    }
                 }
+
                 else
                 {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, id.ToString() + "is not found");
+                    return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, UserName + "is not authorized");
                 }
             }
             
